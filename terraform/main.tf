@@ -201,7 +201,7 @@ resource "aws_instance" "public_test" {
 resource "aws_instance" "private_test" {
   ami             = data.aws_ami.latest-Redhat.id # Get latest RH 8.5x image
   subnet_id       = aws_subnet.private.id
-  security_groups = [aws_security_group.priv_to_priv_ssh.id, aws_security_group.icmp.id]
+  security_groups = [aws_security_group.priv_to_priv_ssh.id, aws_security_group.icmp.id, aws_security_group.pub_to_priv_ssh.id]
   instance_type   = "t3.micro"
   count           = 1
   key_name        = "ssh_key_pair"
