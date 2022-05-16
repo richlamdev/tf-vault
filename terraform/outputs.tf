@@ -1,9 +1,8 @@
-output "Private_IPv4_addresses" {
+output "Private_IPv4_address" {
   value       = aws_instance.private_test[0].private_ip
   description = "private IP"
 }
 
-output "Client_VPN_Endpoint_ID" {
-  value       = aws_ec2_client_vpn_endpoint.vpn.id
-  description = "cvpn-endpoint id"
+output "Public_IPv4_dns_address" {
+  value = aws_instance.public_test[0].public_dns
 }

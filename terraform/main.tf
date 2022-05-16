@@ -98,143 +98,6 @@ resource "aws_route_table_association" "private" {
 }
 ########################### NAT GATWAY ###########################
 
-########################### SECURITY GROUPS ######################
-resource "aws_security_group" "public_ssh" {
-  name        = "sg_public_ssh"
-  description = "allow SSH from internet"
-  vpc_id      = aws_vpc.main.id
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = merge(var.default_tags, {
-    Name = "public_sg_ssh_only"
-    },
-  )
-}
-
-resource "aws_security_group" "pub_to_priv_ssh" {
-  name        = "sg_private_ssh"
-  description = "allow SSH from public subnet"
-  vpc_id      = aws_vpc.main.id
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = merge(var.default_tags, {
-    Name = "private_sg_ssh_only_from_public_subnet"
-    },
-  )
-}
-
-
-resource "aws_security_group" "priv_to_priv_ssh" {
-  name        = "sg_priv_to_priv_ssh"
-  description = "allow SSH from within private subnet"
-  vpc_id      = aws_vpc.main.id
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.2.0/24"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = merge(var.default_tags, {
-    Name = "private_sg_ssh_only_from_within_private_subnet"
-    },
-  )
-}
-
-
-resource "aws_security_group" "icmp" {
-  name        = "sg_icmp"
-  description = "allow icmp from public or private subnet"
-  vpc_id      = aws_vpc.main.id
-  ingress {
-    from_port   = -1
-    to_port     = -1
-    protocol    = "icmp"
-    cidr_blocks = ["10.0.0.0/20"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = merge(var.default_tags, {
-    Name = "private_sg_icmp_from_public_or_private_subnet"
-    },
-  )
-}
-
-
-resource "aws_security_group" "syslog_ng" {
-  name        = "allow_syslog_ng"
-  description = "allow syslog-ng UDP 514 ingress from public or private subnet"
-  vpc_id      = aws_vpc.main.id
-  ingress {
-    from_port   = 514
-    to_port     = 514
-    protocol    = "udp"
-    cidr_blocks = ["10.0.0.0/20"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = merge(var.default_tags, {
-    Name = "allow_syslog_ng_from_public_or_private_subnet"
-    },
-  )
-}
-
-resource "aws_security_group" "dns" {
-  name        = "allow_dns"
-  description = "allow dns UDP 53 ingress from public or private subnet"
-  vpc_id      = aws_vpc.main.id
-  ingress {
-    from_port   = 53
-    to_port     = 53
-    protocol    = "udp"
-    cidr_blocks = ["10.0.0.0/20"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = merge(var.default_tags, {
-    Name = "allow_dns_from_public_or_private_subnet"
-    },
-  )
-}
-
-########################### SECURITY GROUPS ######################
 
 ########################### DHCP OPTIONS #########################
 #resource "aws_vpc_dhcp_options" "config" {
@@ -293,7 +156,7 @@ resource "aws_security_group" "dns" {
 #records         = [each.value.private_ip]
 #}
 ############################ DHCP OPTIONS #########################
-#
+
 ############################ EC2 INSTANCES ########################
 resource "aws_key_pair" "ssh" {
   key_name   = "ssh_key_pair"
@@ -320,20 +183,20 @@ data "aws_ami" "latest-Redhat" {
   tags = var.default_tags
 }
 
-# public instance
-#resource "aws_instance" "public_test" {
-#count           = 5
-#ami             = data.aws_ami.latest-Redhat.id # Get latest RH 8.5x image
-#subnet_id       = aws_subnet.public.id
-#security_groups = [aws_security_group.public_ssh.id, aws_security_group.icmp.id, aws_security_group.syslog_ng.id, aws_security_group.dns.id]
-#instance_type   = "t3.micro"
-##iam_instance_profile = "EC2SSMRole"
-#key_name = "ssh_key_pair"
-#tags = merge(var.default_tags, {
-#Name = "public-instance-test"
-#},
-#)
-#}
+#public instance
+resource "aws_instance" "public_test" {
+  count           = 5
+  ami             = data.aws_ami.latest-Redhat.id # Get latest RH 8.5x image
+  subnet_id       = aws_subnet.public.id
+  security_groups = [aws_security_group.public_ssh.id, aws_security_group.icmp.id]
+  instance_type   = "t3.micro"
+  #iam_instance_profile = "EC2SSMRole"
+  key_name = "ssh_key_pair"
+  tags = merge(var.default_tags, {
+    Name = "public-instance-test"
+    },
+  )
+}
 
 resource "aws_instance" "private_test" {
   ami             = data.aws_ami.latest-Redhat.id # Get latest RH 8.5x image
