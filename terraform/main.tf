@@ -192,6 +192,11 @@ resource "aws_instance" "public_test" {
   instance_type   = "t3.micro"
   #iam_instance_profile = "EC2SSMRole"
   key_name = "ssh_key_pair"
+  user_data = <<EOF
+          #!/bin/bash
+          sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+          sudo dnf install nmap -y
+  EOF
   tags = merge(var.default_tags, {
     Name = "public-instance-test"
     },
@@ -205,7 +210,11 @@ resource "aws_instance" "private_test" {
   instance_type   = "t3.micro"
   count           = 1
   key_name        = "ssh_key_pair"
-
+  user_data = <<EOF
+          #!/bin/bash
+          sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+          sudo dnf install nmap -y
+  EOF
   tags = merge(var.default_tags, {
     Name = "private-instance-test"
     },

@@ -34,5 +34,5 @@ override.tf.json
 *.log
 inventory
 hosts_append
-**/terraform/certs/*
-**/terraform/idp_meta_data/*
+**/terraform/*.sh
+
