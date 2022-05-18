@@ -92,7 +92,7 @@ resource "aws_security_group" "icmp" {
 
 resource "aws_security_group" "vault" {
   name        = "allow_vault_8200"
-  description = "allow tcp ingress from public or private subnet"
+  description = "allow tcp 8200 ingress from public or private subnet"
   vpc_id      = aws_vpc.main.id
   ingress {
     from_port   = 8200

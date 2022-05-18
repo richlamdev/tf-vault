@@ -206,7 +206,7 @@ EOF
 resource "aws_instance" "private_test" {
   ami             = data.aws_ami.latest-Redhat.id # Get latest RH 8.5x image
   subnet_id       = aws_subnet.private.id
-  security_groups = [aws_security_group.priv_to_priv_ssh.id, aws_security_group.icmp.id, aws_security_group.pub_to_priv_ssh.id]
+  security_groups = [aws_security_group.priv_to_priv_ssh.id, aws_security_group.icmp.id, aws_security_group.pub_to_priv_ssh.id, aws_security_group.vault.id]
   instance_type   = "t3.micro"
   count           = 1
   key_name        = "ssh_key_pair"
@@ -214,6 +214,7 @@ resource "aws_instance" "private_test" {
 #!/bin/bash
 sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
 sudo dnf install bind-utils git hping3 lsof nc nmap tcpdump tmux vim -y
+setenforce 0
 EOF
   tags = merge(var.default_tags, {
     Name = "private-instance-test"
