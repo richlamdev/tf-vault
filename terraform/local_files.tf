@@ -1,7 +1,7 @@
 resource "local_file" "inventory" {
   filename = "connect.sh"
   content  = <<EOF
-sshuttle -r ec2-user@${aws_instance.public_test[0].public_dns} 10.0.0.0/16 --ssh-cmd 'ssh -i ~/.ssh/id_ed25519_tf_acg' -v $@
+sshuttle -r ec2-user@${aws_instance.public_test[0].public_dns} 10.0.0.0/16 --ssh-cmd 'ssh -i ~/.ssh/id_ed25519_tf_acg -o StrictHostKeyChecking=no' -v $@
 EOF
 }
 #${aws_instance.public_test[0].public_dns}

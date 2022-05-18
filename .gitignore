@@ -35,4 +35,3 @@ override.tf.json
 inventory
 hosts_append
 **/terraform/*.sh
-
