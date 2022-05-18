@@ -34,4 +34,5 @@ override.tf.json
 *.log
 inventory
 hosts_append
+**/tf_ansible_vars/*
 **/terraform/*.sh

@@ -1,42 +1,44 @@
-resource "local_file" "inventory" {
+################## Create connection file via sshuttle #####################
+
+resource "local_file" "sshuttle" {
   filename = "connect.sh"
   content  = <<EOF
 sshuttle -r ec2-user@${aws_instance.public_test[0].public_dns} 10.0.0.0/16 --ssh-cmd 'ssh -i ~/.ssh/id_ed25519_tf_acg -o StrictHostKeyChecking=no' -v $@
 EOF
 }
-#${aws_instance.public_test[0].public_dns}
-#${aws_instance.public_test[1].public_dns}
-########################### OUTPUT INVENTORY FOR ANSIBLE #########
+################## Create connection file via sshuttle #####################
 
-########################### HOSTS FILE FOR EACH INSTANCE #########
+resource "local_file" "ssh_connection" {
+  filename = "ssh_connect.sh"
+  content  = <<EOF
+ssh -i ~/.ssh/id_ed25519_tf_acg -o StrictHostKeyChecking=no ec2-user@${aws_instance.private_test[0].private_ip}
+EOF
+}
 
-#resource "local_file" "hosts_append" {
-#filename = "../ansible/dnshosts/hosts_append"
-#content  = <<EOF
-#local-data: "syslog-0.tatooine.test.         IN        A      ${aws_instance.public_test[0].private_ip}"
-#local-data: "syslog-1.tatooine.test.         IN        A      ${aws_instance.public_test[1].private_ip}"
-#local-data: "dns.tatooine.test.              IN        A      ${aws_instance.public_test[2].private_ip}"
-#local-data: "client.tatooine.test.           IN        A      ${aws_instance.public_test[3].private_ip}"
-#local-data: "mirror.tatooine.test.           IN        A      ${aws_instance.public_test[4].private_ip}"
-#
-#local-data-ptr: "${aws_instance.public_test[0].private_ip}            syslog-0.tatooine.test."
-#local-data-ptr: "${aws_instance.public_test[1].private_ip}            syslog-1.tatooine.test."
-#local-data-ptr: "${aws_instance.public_test[2].private_ip}            dns.tatooine.test."
-#local-data-ptr: "${aws_instance.public_test[3].private_ip}            client.tatooine.test."
-#local-data-ptr: "${aws_instance.public_test[4].private_ip}            mirror.tatooine.test."
-#EOF
-#}
+################### START OUTPUT INVENTORY FOR ANSIBLE ###################
+resource "local_file" "inventory" {
+  filename = "../ansible/inventory"
+  content  = <<EOF
+[vault]
+${aws_instance.private_test[0].private_ip}
 
-########################### CREATE ANSIBLE VARS FILE ##############
-#resource "local_file" "ansible_vars" {
-  #filename = "../ansible/tf_ansible_vars/ansible_vars.yml"
-  #content  = <<EOF
-#syslog_0: ${aws_instance.public_test[0].private_ip}
-#syslog_1: ${aws_instance.public_test[1].private_ip}
-#dns: ${aws_instance.public_test[2].private_ip}
-#client: ${aws_instance.public_test[3].private_ip}
-#mirror: ${aws_instance.public_test[4].private_ip}
-#
-#EOF
-#}
-########################### CREATE ANSIBLE VARS FILE ##############
+[multi:children]
+vault
+
+[multi:vars]
+ansible_become=True
+ansible_become_method=sudo
+ansible_become_user=root
+ansible_python_interpreter=/usr/bin/python3
+EOF
+}
+################### END OUTPUT INVENTORY FOR ANSIBLE ###################
+
+########################### CREATE ANSIBLE VARS FILE #######################
+resource "local_file" "ansible_vars" {
+  filename = "../ansible/tf_ansible_vars/ansible_vars.yml"
+  content  = <<EOF
+vault: ${aws_instance.private_test[0].private_ip}
+EOF
+}
+########################### CREATE ANSIBLE VARS FILE ######################
