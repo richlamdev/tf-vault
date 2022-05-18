@@ -1,0 +1,34 @@
+---
+- name: Playbook desktop start
+  become: True
+  become_user: root
+  become_method: sudo
+  gather_facts: True
+  #vars:
+    #ansible_python_interpreter: /usr/local/bin/python3
+  #tasks:
+  #- include_tasks: tasks/main.yml
+
+
+  hosts: all
+  roles:
+    - role: bootstrap
+    - role: env
+    - role: repo-epel
+    - role: packages
+    - role: selinux
+    - role: vim
+
+    - role: syslog-ng
+      when: inventory_hostname in groups ['syslogng']
+
+    - role: unbound
+      when: inventory_hostname in groups ['dns']
+
+    - role: client
+      when: inventory_hostname in groups ['client']
+
+    - role: mirror
+      when: inventory_hostname in groups ['mirror']
+
+    - role: host-config
