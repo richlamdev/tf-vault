@@ -18,17 +18,18 @@
     - role: packages
     - role: selinux
     - role: vim
-
-    - role: syslog-ng
-      when: inventory_hostname in groups ['syslogng']
-
-    - role: unbound
-      when: inventory_hostname in groups ['dns']
-
-    - role: client
-      when: inventory_hostname in groups ['client']
-
-    - role: mirror
-      when: inventory_hostname in groups ['mirror']
-
-    - role: host-config
+    - role: ansible-vault
+#
+    #- role: syslog-ng
+      #when: inventory_hostname in groups ['syslogng']
+#
+    #- role: unbound
+      #when: inventory_hostname in groups ['dns']
+#
+    #- role: client
+      #when: inventory_hostname in groups ['client']
+#
+    #- role: mirror
+      #when: inventory_hostname in groups ['mirror']
+#
+    #- role: host-config

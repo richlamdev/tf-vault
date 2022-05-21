@@ -1,0 +1,15 @@
+---
+- name: Install misc packages
+  dnf:
+    state: latest
+    name:
+      - bind-utils
+      - git
+      - hping3
+      - lsof
+      - nc
+      - nftables
+      - nmap
+      - tcpdump
+      - tmux
+      - vim
