@@ -12,13 +12,13 @@
 
   hosts: all
   roles:
-    - role: bootstrap
-    - role: env
-    - role: repo-epel
-    - role: packages
-    - role: selinux
-    - role: vim
-    - role: ansible-vault
+    - bootstrap
+    - env
+    - repo-epel
+    - packages
+    - selinux
+    - vim
+    - ansible-vault
 #
     #- role: syslog-ng
       #when: inventory_hostname in groups ['syslogng']
