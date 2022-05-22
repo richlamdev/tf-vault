@@ -38,7 +38,7 @@ EOF
 resource "local_file" "ansible_vars" {
   filename = "../ansible/tf_ansible_vars/ansible_vars.yml"
   content  = <<EOF
-vault: ${aws_instance.private_test[0].private_ip}
+vault_ip: ${aws_instance.private_test[0].private_ip}
 EOF
 }
 ########################### CREATE ANSIBLE VARS FILE ######################

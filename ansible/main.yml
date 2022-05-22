@@ -11,6 +11,11 @@
 
 
   hosts: all
+  vars_files:
+    - defaults/main.yml
+    - tf_ansible_vars/ansible_vars.yml
+  environment:
+    VAULT_ADDR: "http://{{vault_ip}}:{{vault_port}}"
   roles:
     - bootstrap
     - env
@@ -19,6 +24,7 @@
     - selinux
     - vim
     - ansible-vault
+    - vault-init
 #
     #- role: syslog-ng
       #when: inventory_hostname in groups ['syslogng']

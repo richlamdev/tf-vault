@@ -1,0 +1,27 @@
+---
+unseal_keys_dir_output: "/opt/vault/tokens/unsealkey"
+root_token_dir_output: "/opt/vault/tokens/rootkey"
+vault_bin_dir: "/usr/local/bin"
+
+ca_name: "Lord of the Rings"
+ca_name_filename: "Lord-of-the-Rings"
+tld: ".test"
+sld: "middleearth"
+root_ttl: "87600h"
+intermediate_ttl: "43800h"
+role_ttl: "40000h"
+leaf_ttl: "24h"
+
+
+app_hostname: "app"
+app_ip: "192.168.60.4"
+
+scanner_hostname: "scanner"
+scanner_ip: "192.168.60.5"
+
+vault_hostname: "vault"
+vault_ip: "192.168.60.6"
+vault_port: "8200"
+
+grafana_hostname: "grafana"
+grafana_ip: "192.168.60.7"

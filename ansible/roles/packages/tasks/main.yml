@@ -4,8 +4,10 @@
     state: latest
     name:
       - bind-utils
+      - curl
       - git
       - hping3
+      - jq
       - lsof
       - nc
       - nftables
