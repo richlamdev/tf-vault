@@ -3,6 +3,7 @@
 resource "local_file" "sshuttle" {
   filename = "connect.sh"
   content  = <<EOF
+echo
 sshuttle -r ec2-user@${aws_instance.public_test[0].public_dns} 10.0.0.0/16 --ssh-cmd 'ssh -i ~/.ssh/id_ed25519_tf_acg -o StrictHostKeyChecking=no' -v $@
 EOF
 }
@@ -11,6 +12,7 @@ EOF
 resource "local_file" "ssh_connection" {
   filename = "ssh_connect.sh"
   content  = <<EOF
+echo
 ssh -i ~/.ssh/id_ed25519_tf_acg -o StrictHostKeyChecking=no ec2-user@${aws_instance.private_test[0].private_ip}
 EOF
 }

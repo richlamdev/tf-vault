@@ -16,6 +16,7 @@
     - tf_ansible_vars/ansible_vars.yml
   environment:
     VAULT_ADDR: "http://{{vault_ip}}:{{vault_port}}"
+    #PATH: '$PATH:{{ vault_bin_dir }}'
   roles:
     - bootstrap
     - env
