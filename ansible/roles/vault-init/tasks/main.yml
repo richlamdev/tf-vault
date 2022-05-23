@@ -20,10 +20,12 @@
 - name: check if vault is initialized
   shell: "{{vault_bin_dir}}/vault status -tls-skip-verify -format=json | jq -r '.initialized'"
   register: initialized
+  changed_when: initialized.stdout == 'false'
 
 - name: check if vault is sealed
   shell: "{{vault_bin_dir}}/vault status -tls-skip-verify -format=json | jq -r '.sealed'"
   register: sealed
+  changed_when: sealed.stdout == 'false'
 
 - name: Initialize Vault operator
   shell: "{{vault_bin_dir}}/vault operator init -tls-skip-verify -key-shares=5 -key-threshold=3 -format json"

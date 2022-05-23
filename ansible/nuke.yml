@@ -1,0 +1,18 @@
+---
+- name: "Reset Vault (uninitialize) service"
+  hosts: all
+  gather_facts: True
+ # vars_files example
+  #vars_files:
+    #- "./tf_ansible_vars/ansible_vars.yml"
+  tasks:
+   # include_vars example
+    - include_vars: "./tf_ansible_vars/ansible_vars.yml"
+    - name: remove root and unseal tokens
+      shell: rm -rf /opt/vault/tokens/*
+
+    - name: restart vault service
+      systemd:
+        name: vault.service
+        enabled: True
+        state: restarted
