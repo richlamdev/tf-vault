@@ -16,7 +16,7 @@
   #with_sequence: 0-4
 
 - name: Unseal vault with unseal keys
-  shell: vault operator unseal -tls-skip-verify '{{ unseal_keys["results"][item|int]["content"] | b64decode }}'
+  shell: "{{vault_bin_dir}}/vault operator unseal -tls-skip-verify '{{ unseal_keys['results'][item|int]['content'] | b64decode }}'"
   #environment:
     #VAULT_ADDR: "https://127.0.0.1:8200"
   with_sequence: 0-4
@@ -31,10 +31,11 @@
 #    msg: "{{ rootkey['content'] | b64decode}}"
 
 - name: Vault login
-  shell: vault login -tls-skip-verify "{{ rootkey['content'] | b64decode}}"
+  shell: "{{vault_bin_dir}}/vault login -tls-skip-verify '{{ rootkey['content'] | b64decode}}'"
 
 - name: check if the PKI secrets engine is enabled
-  shell: vault secrets list -tls-skip-verify -format=json | jq -r '."pki/"'
+  #shell: "{{vault_bin_dir}}/vault secrets list -tls-skip-verify -format=json | jq -r '.'pki/''"
+  shell: /usr/local/bin/vault secrets list -tls-skip-verify -format=json | jq -r '."pki/"'
   register: pki_enabled
 
 #- name: value of pki_enabled
@@ -43,37 +44,37 @@
 
 - name: enable the PKI secrets engine and set TTL 87600hrs (10 years)
   shell: |
-    vault secrets enable -tls-skip-verify pki
-    vault secrets tune -tls-skip-verify -max-lease-ttl=87600h pki
+    /usr/local/bin/vault secrets enable -tls-skip-verify pki
+    "{{vault_bin_dir}}/vault secrets tune -tls-skip-verify -max-lease-ttl=87600h pki"
   when: pki_enabled.stdout == 'null'
 
 - name: generate root certificate
   shell: |
-    vault write -tls-skip-verify pki/root/generate/internal -field=certificate common_name='{{ca_name}} Root Authority' ttl={{root_ttl}} > {{ca_name_filename}}_CA_root_cert.crt
-    vault write -tls-skip-verify pki/config/urls issuing_certificates="https://127.0.0.1:8200/v1/pki/ca" crl_distribution_points="https://127.0.0.1:8200/v1/pki/crl"
+    "{{vault_bin_dir}}/vault write -tls-skip-verify pki/root/generate/internal -field=certificate common_name='{{ca_name}} Root Authority' ttl={{root_ttl}} > {{ca_name_filename}}_CA_root_cert.crt"
+    "{{vault_bin_dir}}/vault write -tls-skip-verify pki/config/urls issuing_certificates='https://127.0.0.1:8200/v1/pki/ca' crl_distribution_points='https://127.0.0.1:8200/v1/pki/crl'"
   when: pki_enabled.stdout == 'null'
 
 - name: enable the pki secrets engine at pki_int path, set issue cert max TTL 43800hrs (5 years)
   shell: |
-    vault secrets enable -tls-skip-verify -path=pki_int pki
-    vault secrets tune -tls-skip-verify -max-lease-ttl=43800h pki_int
+    "{{vault_bin_dir}}/vault secrets enable -tls-skip-verify -path=pki_int pki"
+    "{{vault_bin_dir}}/vault secrets tune -tls-skip-verify -max-lease-ttl=43800h pki_int"
   when: pki_enabled.stdout == 'null'
 
 
 - name: generate intermediate csr, sign csr by root, import back into vault
   shell: |
-    vault write -tls-skip-verify -format=json pki_int/intermediate/generate/internal common_name='{{ca_name}} Intermediate Authority' | jq -r '.data.csr' > {{ca_name_filename}}_intermediate.csr
-    vault write -tls-skip-verify -format=json pki/root/sign-intermediate csr=@{{ca_name_filename}}_intermediate.csr format=pem_bundle ttl={{intermediate_ttl}} | jq -r '.data.certificate' > {{ca_name_filename}}_intermediate_signed_by_root.cert.pem
-    vault write -tls-skip-verify pki_int/intermediate/set-signed certificate=@{{ca_name_filename}}_intermediate_signed_by_root.cert.pem
+    "{{vault_bin_dir}}/vault write -tls-skip-verify -format=json pki_int/intermediate/generate/internal common_name='{{ca_name}} Intermediate Authority' | jq -r '.data.csr' > {{ca_name_filename}}_intermediate.csr"
+    "{{vault_bin_dir}}/vault write -tls-skip-verify -format=json pki/root/sign-intermediate csr=@{{ca_name_filename}}_intermediate.csr format=pem_bundle ttl={{intermediate_ttl}} | jq -r '.data.certificate' > {{ca_name_filename}}_intermediate_signed_by_root.cert.pem"
+    "{{vault_bin_dir}}/vault write -tls-skip-verify pki_int/intermediate/set-signed certificate=@{{ca_name_filename}}_intermediate_signed_by_root.cert.pem"
   when: pki_enabled.stdout == 'null'
 
 - name: create a role
-  shell: vault write -tls-skip-verify pki_int/roles/{{sld}} allowed_domains={{sld}}{{tld}} allow_subdomains=true max_ttl={{role_ttl}}
+  shell: "{{vault_bin_dir}}/vault write -tls-skip-verify pki_int/roles/{{sld}} allowed_domains={{sld}}{{tld}} allow_subdomains=true max_ttl={{role_ttl}}"
   when: pki_enabled.stdout == 'null'
 
 - name: request a certificate for vault server
   shell: |
-    vault write -tls-skip-verify -format=json pki_int/issue/{{sld}} common_name="{{vault_hostname}}.{{sld}}{{tld}}" ip_sans="192.168.60.6" ttl="43800h" > {{vault_hostname}}.json 
+    "{{vault_bin_dir}}/vault write -tls-skip-verify -format=json pki_int/issue/{{sld}} common_name='{{vault_hostname}}.{{sld}}{{tld}}' ip_sans='192.168.60.6' ttl='43800h' > {{vault_hostname}}.json"
     jq -r '.data.certificate,.data.issuing_ca' {{vault_hostname}}.json > {{vault_hostname}}.{{sld}}{{tld}}_cert.crt
     jq -r '.data.private_key' {{vault_hostname}}.json > {{vault_hostname}}.{{sld}}{{tld}}_cert.key
   when: pki_enabled.stdout == 'null'
@@ -92,12 +93,12 @@
   when: pki_enabled.stdout == 'null'
 
 - name: Unseal vault with unseal keys
-  shell: vault operator unseal -tls-skip-verify '{{ unseal_keys["results"][item|int]["content"] | b64decode }}'
+  shell: "{{vault_bin_dir}}/vault operator unseal -tls-skip-verify '{{ unseal_keys['results'][item|int]['content'] | b64decode }}'"
   with_sequence: 0-4
   when: pki_enabled.stdout == 'null'
 
 - name: Vault login
-  shell: vault login -tls-skip-verify "{{ rootkey['content'] | b64decode}}"
+  shell: "{{vault_bin_dir}}/vault login -tls-skip-verify '{{ rootkey['content'] | b64decode}}'"
   when: pki_enabled.stdout == 'null'
 
 
