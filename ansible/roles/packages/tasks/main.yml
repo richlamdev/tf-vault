@@ -15,3 +15,9 @@
       - tcpdump
       - tmux
       - vim
+
+- name: Install hvac
+  pip:
+    name: hvac
+    state: present
+    #extra_args: --user

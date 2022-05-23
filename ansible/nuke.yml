@@ -9,7 +9,7 @@
    # include_vars example
     - include_vars: "./tf_ansible_vars/ansible_vars.yml"
     - name: remove root and unseal tokens
-      shell: rm -rf /opt/vault/tokens/*
+      shell: rm -rf /var/vault/*
 
     - name: restart vault service
       systemd:

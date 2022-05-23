@@ -1,49 +1,56 @@
 ---
+- name: initialize vault
+  hashivault_init:
+    #secret_shares: 5
+    #secret_threshold: 3
+    #stored_shares: 3
+
+
 #
 # Ignores TLS checking
 #
-- name: Create unseal directories
-  file:
-    path: "{{ unseal_keys_dir_output }}"
-    state: directory
-
-- name: Create root key directories
-  file:
-    path: "{{ root_token_dir_output }}"
-    state: directory
-
-- name: check if vault is initialized
-  shell: "{{vault_bin_dir}}/vault status -tls-skip-verify -format=json | jq -r '.initialized'"
-  #shell: vault status -tls-skip-verify -format=json | jq -r '.initialized'
-  register: initialized
-  changed_when: initialized.stdout == 'false'
-
-- name: check if vault is sealed
-  shell: "{{vault_bin_dir}}/vault status -tls-skip-verify -format=json | jq -r '.sealed'"
-  #shell: vault status -tls-skip-verify -format=json | jq -r '.sealed'
-  register: sealed
-  changed_when: sealed.stdout == 'false'
-
-- name: Initialize Vault operator
-  shell: "{{vault_bin_dir}}/vault operator init -tls-skip-verify -key-shares=5 -key-threshold=3 -format json"
-  #shell: vault operator init -tls-skip-verify -key-shares=5 -key-threshold=3 -format json
-  register: vault_init_results
-  when: initialized.stdout == 'false'
-
-- name: Parse output of vault init
-  set_fact:
-    vault_init_parsed: "{{ vault_init_results.stdout | from_json }}"
-  when: initialized.stdout == 'false'
-
-- name: Write unseal keys to files
-  copy:
-    dest: "{{ unseal_keys_dir_output }}/unseal_key_{{ item.0 }}"
-    content: "{{ item.1 }}"
-  with_indexed_items: "{{ vault_init_parsed.unseal_keys_hex }}"
-  when: initialized.stdout == 'false'
-
-- name: Write root token to file
-  copy:
-    content: "{{ vault_init_parsed.root_token }}"
-    dest: "{{root_token_dir_output}}/rootkey"
-  when: initialized.stdout == 'false'
+#- name: Create unseal directories
+  #file:
+    #path: "{{ unseal_keys_dir_output }}"
+    #state: directory
+#
+#- name: Create root key directories
+  #file:
+    #path: "{{ root_token_dir_output }}"
+    #state: directory
+#
+#- name: check if vault is initialized
+  #shell: "{{vault_bin_dir}}/vault status -tls-skip-verify -format=json | jq -r '.initialized'"
+  ##shell: vault status -tls-skip-verify -format=json | jq -r '.initialized'
+  #register: initialized
+  #changed_when: initialized.stdout == 'false'
+#
+#- name: check if vault is sealed
+  #shell: "{{vault_bin_dir}}/vault status -tls-skip-verify -format=json | jq -r '.sealed'"
+  ##shell: vault status -tls-skip-verify -format=json | jq -r '.sealed'
+  #register: sealed
+  #changed_when: sealed.stdout == 'false'
+#
+#- name: Initialize Vault operator
+  #shell: "{{vault_bin_dir}}/vault operator init -tls-skip-verify -key-shares=5 -key-threshold=3 -format json"
+  ##shell: vault operator init -tls-skip-verify -key-shares=5 -key-threshold=3 -format json
+  #register: vault_init_results
+  #when: initialized.stdout == 'false'
+#
+#- name: Parse output of vault init
+  #set_fact:
+    #vault_init_parsed: "{{ vault_init_results.stdout | from_json }}"
+  #when: initialized.stdout == 'false'
+#
+#- name: Write unseal keys to files
+  #copy:
+    #dest: "{{ unseal_keys_dir_output }}/unseal_key_{{ item.0 }}"
+    #content: "{{ item.1 }}"
+  #with_indexed_items: "{{ vault_init_parsed.unseal_keys_hex }}"
+  #when: initialized.stdout == 'false'
+#
+#- name: Write root token to file
+  #copy:
+    #content: "{{ vault_init_parsed.root_token }}"
+    #dest: "{{root_token_dir_output}}/rootkey"
+  #when: initialized.stdout == 'false'
