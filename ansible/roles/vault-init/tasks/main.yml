@@ -34,6 +34,42 @@
   with_indexed_items:
     - "{{ initialized.keys_base64 }}"
 
+- name: retrieve unseal keys
+  slurp:
+    src: "{{ item }}"
+  register: unseal_keys
+  loop:
+    - /tmp/key_0
+    - /tmp/key_1
+    - /tmp/key_2
+    - /tmp/key_3
+    - /tmp/key_4
+
+- name: show unseal keys from file
+  debug:
+    msg: "{{ unseal_keys }}"
+
+- name: show dictionary
+  debug:
+    msg: "{{ unseal_keys.results | first | first }}"
+
+- name: show dictionary
+  debug:
+    msg: "{{ unseal_keys }}"
+
+
+- name: show unseal keys from file
+  debug:
+    msg: "{{ unseal_keys.results | type_debug }}"
+
+#- name: retrieve unseal keys
+  #slurp:
+    #src: "/tmp/key_0"
+  #register: unseal_keys
+#
+#- name: show unseal keys from file
+  #debug:
+    #msg: "{{ unseal_keys }}"
 
 #
 # Ignores TLS checking
