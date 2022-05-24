@@ -4,6 +4,20 @@
     #secret_shares: 5
     #secret_threshold: 3
     #stored_shares: 3
+  register: initialized
+
+- name: show keys
+  debug:
+    #msg: "{{ initialized.keys_base64 }}"
+    msg: "{{ initialized.keys_base64[0] }}"
+    #msg: "Key is {{ item.key}} and value is {{item.value}}"
+  #with_dict: "{{ initialized }}"
+
+- name: save locally
+  local_action:
+    module: copy
+    content: "{{ initialized }}"
+    dest: temp_var
 
 
 #

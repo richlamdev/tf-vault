@@ -18,13 +18,13 @@
     VAULT_ADDR: "http://{{vault_ip}}:{{vault_port}}"
     #PATH: '$PATH:{{ vault_bin_dir }}'
   roles:
-    - bootstrap
-    - env
-    - repo-epel
-    - packages
-    - selinux
-    - vim
-    - ansible-vault
+    #- bootstrap
+    #- env
+    #- repo-epel
+    #- packages
+    #- selinux
+    #- vim
+    #- ansible-vault
     - vault-init
     #- vault-root-inter-cert
 #
