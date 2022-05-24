@@ -51,16 +51,22 @@
 
 - name: show dictionary
   debug:
-    msg: "{{ unseal_keys.results | first | first }}"
+    msg: "{{ item }}"
+  loop:
+    - "{{ unseal_keys.results[0].content }}"
+    - "{{ unseal_keys.results[1].content }}"
+    - "{{ unseal_keys.results[2].content }}"
+    - "{{ unseal_keys.results[3].content }}"
+    - "{{ unseal_keys.results[4].content }}"
 
-- name: show dictionary
-  debug:
-    msg: "{{ unseal_keys }}"
+#- name: show dictionary
+#  debug:
+#    msg: "{{ unseal_keys.results[0].content }}"
 
 
-- name: show unseal keys from file
-  debug:
-    msg: "{{ unseal_keys.results | type_debug }}"
+#- name: show unseal keys from file
+  #debug:
+    #msg: "{{ unseal_keys.results[0] | type_debug }}"
 
 #- name: retrieve unseal keys
   #slurp:
