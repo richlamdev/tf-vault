@@ -6,44 +6,33 @@
     #stored_shares: 3
   register: initialized
 
-- name: show keys
+- name: show initialized variable - keys_base64
   debug:
-    #msg: "{{ initialized.keys_base64 }}"
     msg: "{{ initialized.keys_base64 }}"
     #msg: "Key is {{ item.key}} and value is {{item.value}}"
   #with_dict: "{{ initialized }}"
 
 - name: show keys individually
   debug:
-    #msg: "{{ initialized.keys_base64 }}"
-    #msg: "{% for item in initialized.keys_base64 %}{{ item + '\n'}}{% endfor %}"
     msg: "{{ item.0 }}"
   loop:
     - "{{ initialized.keys_base64 }}"
   loop_control:
     extended: yes
 
-
-- name: show index
+- name: show index and value
   debug:
     #msg: "at array position {{ item.0 }} there is a value {{ item.1 }}"
-    msg: "{{ item.0 }}"
+    msg: "{{ item.0 }}  {{ item.1 }}"
   with_indexed_items:
     - "{{ initialized.keys_base64 }}"
 
-- name: save locally
-  #shell: echo "{{ initialized.keys_base64 }}" > /tmp/initialized_var.txt
-  #shell: echo "{% for item in initialized.keys_base64 %}{{ item + '\n'}}{% endfor %}" > /tmp/initialized_var.txt
-  shell: echo "{% for item in initialized.keys_base64 %}{{ item }} '\n' {% endfor %}" > "/tmp/initialized_var_{% for item in initialized.keys_base64 %} {% endfor %}"
-
-#- name: read initialized (init_keys)
-  #slurp:
-    #src: /tmp/initialized_var.txt
-  #register: init_keys
-
-#@- name: print init_keys
-  #@debug:
-    #@msg: "{{ init_keys }}"
+- name: save unseal keys locally
+  copy:
+    content: "{{ item.1 }}'\n'"
+    dest: "/tmp/key_{{ item.0 }}"
+  with_indexed_items:
+    - "{{ initialized.keys_base64 }}"
 
 
 #
