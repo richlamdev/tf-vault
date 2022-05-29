@@ -6,30 +6,27 @@
     #stored_shares: 3
   register: initialized
 
-- name: show initialized variable - keys_base64
+- name: show initialized variable
   debug:
-    msg: "{{ initialized.keys_base64 }}"
-    #msg: "Key is {{ item.key}} and value is {{item.value}}"
-  #with_dict: "{{ initialized }}"
+    msg: "{{ initialized }}"
 
-- name: show keys individually
+- name: show initialized variable first key_base64 individually
   debug:
-    msg: "{{ item.0 }}"
-  loop:
-    - "{{ initialized.keys_base64 }}"
-  loop_control:
-    extended: yes
+    msg: "{{ initialized.keys_base64[0] }}"
 
-- name: show index and value
+- name: show initialized variable - keys
   debug:
-    #msg: "at array position {{ item.0 }} there is a value {{ item.1 }}"
-    msg: "{{ item.0 }}  {{ item.1 }}"
-  with_indexed_items:
-    - "{{ initialized.keys_base64 }}"
+    msg: "Key is {{ item.key}} and value is {{item.value}}"
+  with_dict: "{{ initialized }}"
+
+- name: show variable each key in keys_base64
+  debug:
+    msg: "{{ item }}"
+  with_items: "{{ initialized.keys_base64 }}"
 
 - name: save unseal keys locally
   copy:
-    content: "{{ item.1 }}'\n'"
+    content: "{{ item.1 }}"
     dest: "/tmp/key_{{ item.0 }}"
   with_indexed_items:
     - "{{ initialized.keys_base64 }}"
