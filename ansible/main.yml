@@ -27,6 +27,7 @@
     #- ansible-vault
     - vault-init
     - vault-unseal
+    - vault-root-inter-cert
 #
     #- role: syslog-ng
       #when: inventory_hostname in groups ['syslogng']

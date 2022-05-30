@@ -1,13 +1,24 @@
 ---
+- name: check hashivault status
+  hashivault_status:
+  register: vault_status
+
+- name: show hashivault status
+  debug:
+    #msg: "Seal progress is {{ vault_status.status.progress }}"
+    msg: "Seal progress is {{ vault_status }}"
+
 - name: initialize vault
   hashivault_init:
     secret_shares: 3
     secret_threshold: 3
   register: initialized
+  when: vault_status.status.initialized == False
 
 - name: show initialized variable
   debug:
     msg: "{{ initialized }}"
+  when: vault_status.status.initialized == False
 
 #- name: show initialized root token
   #debug:
@@ -21,11 +32,13 @@
   debug:
     msg: "Key is {{ item.key}} and value is {{item.value}}"
   with_dict: "{{ initialized }}"
+  when: vault_status.status.initialized == False
 
 - name: show variable each key in keys_base64
   debug:
     msg: "{{ item }}"
   with_items: "{{ initialized.keys_base64 }}"
+  when: vault_status.status.initialized == False
 
 - name: save unseal keys locally
   copy:
@@ -33,11 +46,13 @@
     dest: "/tmp/key_{{ item.0 }}"
   with_indexed_items:
     - "{{ initialized.keys_base64 }}"
+  when: vault_status.status.initialized == False
 
 - name: save root token locally
   copy:
     content: "{{ initialized.root_token }}"
     dest: "/tmp/root_token"
+  when: vault_status.status.initialized == False
 
 #
 # Ignores TLS checking
