@@ -40,6 +40,12 @@
     content: "{{ root_cert.data.issuing_ca }}"
     dest: "/tmp/issuing_ca"
 
+- name: configure CA and CRL URLs
+  hashivault_write:
+    secret: "config/urls"
+    mount_point: "pki"
+    data: {"issuing_certificates":"http://10.0.2.66:8200/v1/pki/ca"}
+
 
 #- name: Get unseal tokens
   #slurp:
