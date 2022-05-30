@@ -1,0 +1,29 @@
+---
+- name: retrieve unseal keys
+  slurp:
+    src: "{{ item }}"
+  register: unseal_keys
+  loop:
+    - /tmp/key_0
+    - /tmp/key_1
+    - /tmp/key_2
+
+- name: show unseal keys from file
+  debug:
+    msg: "{{ unseal_keys }}"
+
+- name: show dictionary
+  debug:
+    msg: "{{ item.0 }}"
+  loop:
+    - "{{ unseal_keys.results[0].content | b64decode }}"
+    - "{{ unseal_keys.results[1].content | b64decode }}"
+    - "{{ unseal_keys.results[2].content | b64decode }}"
+
+- name: unseal vault
+  hashivault_unseal:
+    keys: "{{ item }}"
+  loop:
+    - "{{ unseal_keys.results[0].content | b64decode }}"
+    - "{{ unseal_keys.results[1].content | b64decode }}"
+    - "{{ unseal_keys.results[2].content | b64decode }}"

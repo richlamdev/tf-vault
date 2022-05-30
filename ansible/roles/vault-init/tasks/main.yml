@@ -1,18 +1,21 @@
 ---
 - name: initialize vault
   hashivault_init:
-    #secret_shares: 5
-    #secret_threshold: 3
-    #stored_shares: 3
+    secret_shares: 3
+    secret_threshold: 3
   register: initialized
 
 - name: show initialized variable
   debug:
     msg: "{{ initialized }}"
 
-- name: show initialized variable first key_base64 individually
-  debug:
-    msg: "{{ initialized.keys_base64[0] }}"
+#- name: show initialized root token
+  #debug:
+    #msg: "{{ initialized.root_token }}"
+#
+#- name: show initialized variable first key_base64 individually
+  #debug:
+    #msg: "{{ initialized.keys_base64[0] }}"
 
 - name: show initialized variable - keys
   debug:
@@ -31,48 +34,10 @@
   with_indexed_items:
     - "{{ initialized.keys_base64 }}"
 
-- name: retrieve unseal keys
-  slurp:
-    src: "{{ item }}"
-  register: unseal_keys
-  loop:
-    - /tmp/key_0
-    - /tmp/key_1
-    - /tmp/key_2
-    - /tmp/key_3
-    - /tmp/key_4
-
-- name: show unseal keys from file
-  debug:
-    msg: "{{ unseal_keys }}"
-
-- name: show dictionary
-  debug:
-    msg: "{{ item }}"
-  loop:
-    - "{{ unseal_keys.results[0].content }}"
-    - "{{ unseal_keys.results[1].content }}"
-    - "{{ unseal_keys.results[2].content }}"
-    - "{{ unseal_keys.results[3].content }}"
-    - "{{ unseal_keys.results[4].content }}"
-
-#- name: show dictionary
-#  debug:
-#    msg: "{{ unseal_keys.results[0].content }}"
-
-
-#- name: show unseal keys from file
-  #debug:
-    #msg: "{{ unseal_keys.results[0] | type_debug }}"
-
-#- name: retrieve unseal keys
-  #slurp:
-    #src: "/tmp/key_0"
-  #register: unseal_keys
-#
-#- name: show unseal keys from file
-  #debug:
-    #msg: "{{ unseal_keys }}"
+- name: save root token locally
+  copy:
+    content: "{{ initialized.root_token }}"
+    dest: "/tmp/root_token"
 
 #
 # Ignores TLS checking
