@@ -15,8 +15,10 @@
   hashivault_secret_engine:
     name: pki
     backend: pki
-    #config: {"default_lease_ttl": 27648000, "force_no_cache": false, "max_lease_ttl": 27648000}
-    config: {"default_lease_ttl": "876000h", "force_no_cache": false, "max_lease_ttl": "876000h"}
+    config:
+      default_lease_ttl: "876000h"
+      force_no_cache: false
+      max_lease_ttl: "876000h"
 
 - name: create root cert
   hashivault_pki_ca:
@@ -40,11 +42,19 @@
     content: "{{ root_cert.data.issuing_ca }}"
     dest: "/tmp/issuing_ca"
 
-- name: configure CA and CRL URLs
+- name: configure CA URL
   hashivault_write:
     secret: "config/urls"
     mount_point: "pki"
-    data: {"issuing_certificates":"http://10.0.2.66:8200/v1/pki/ca"}
+    data:
+      issuing_certificates: "{{ vault_ip }}:8200/v1/pki/ca"
+
+- name: configure CRL URL
+  hashivault_write:
+    secret: "config/urls"
+    mount_point: "pki"
+    data:
+      crl_distribution_points: "{{ vault_ip }}:8200/v1/pki/crl"
 
 
 #- name: Get unseal tokens
