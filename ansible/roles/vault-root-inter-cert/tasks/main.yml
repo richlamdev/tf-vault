@@ -73,7 +73,7 @@
     common_name: my intermediate cert
     config:
       ttl: "438000"
-    kind: "intermediate"
+    kind: intermediate
     mount_point: "int_pki"
     type: exported
   register: intermediate_csr
@@ -87,6 +87,41 @@
     content: "{{ intermediate_csr.data.csr }}"
     dest: "/tmp/pki_intermediate.csr"
 
+- name: sign intermediate csr
+  hashivault_pki_cert_sign:
+    mount_point: "pki"
+    csr: "{{ intermediate_csr.data.csr }}"
+    common_name: "test.example.com"
+    type: intermediate
+  register: signed_intermediate
+
+- name: show signed_intermediate
+  debug:
+    msg: "{{ signed_intermediate }}"
+
+- name: save signed intermediate cert to disk
+  copy:
+    content: "{{ signed_intermediate.data.certificate }}"
+    dest: "/tmp/signed_intermediate.crt"
+
+- name: save signed intermediate issuing_ca to disk
+  copy:
+    content: "{{ signed_intermediate.data.issuing_ca }}"
+    dest: "/tmp/signed_intermediate_issuing_ca.crt"
+
+- name: set signed intermediate
+  hashivault_pki_set_signed:
+    mount_point: "int_pki"
+    certificate: "{{ signed_intermediate.data.certificate }}\n{{ signed_intermediate.data.issuing_ca }}"
+
+- name: create role
+  hashivault_pki_role:
+    name: domain_role
+    mount_point: "int_pki"
+    config:
+      allowed_domains: "example.com"
+      allow_subdomains: "yes"
+      max_ttl: "40000"
 
 #- name: Get unseal tokens
   #slurp:
