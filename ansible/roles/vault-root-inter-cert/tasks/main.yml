@@ -34,16 +34,19 @@
 - name: show root_cert variable
   debug:
     msg: "{{ root_cert }}"
+  when: root_cert.data.certificate is defined
 
 - name: save root_cert to disk
   copy:
     content: "{{ root_cert.data.certificate }}"
     dest: "/tmp/root_cert"
+  when: root_cert.data.certificate is defined
 
 - name: save issuing_ca to disk
   copy:
     content: "{{ root_cert.data.issuing_ca }}"
     dest: "/tmp/issuing_ca"
+  when: root_cert.data.issuing_ca is defined
 
 - name: configure CA URL
   hashivault_write:
