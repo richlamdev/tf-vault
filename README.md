@@ -10,8 +10,8 @@ https://github.com/TerryHowe/ansible-modules-hashivault
 ## Quick Start
 
 1) Generate a SSH keypair, named ```id_ed25519_tf_acg``` and ensure the pair is available in your home directory .ssh. IE:\
-```/home/<your_username/.ssh/id_ed25519_tf_acg``` and\
-```/home/<your_username/.ssh/id_ed25519_tf_acg.pub```
+```/home/<your_username>/.ssh/id_ed25519_tf_acg``` and\
+```/home/<your_username>/.ssh/id_ed25519_tf_acg.pub```
 
 2) Install Ansible Modules Hashivault from above github repo:
 ```pip install ansible-modules-hashivault```
@@ -29,7 +29,7 @@ Under the terraform/ directory execute:\
 5) connect to the EC2 instance via poor man's VPN - sshuttle with the login script located under terraform/ directory
 ```./connect.sh```
 
-6) deploy ansible roles from the ansible/ directory
+6) deploy ansible roles from the ansible/ directory\n
 ```./deploy.sh```
 
 
