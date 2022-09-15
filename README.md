@@ -6,6 +6,29 @@ Based on the github modules located here:
 
 https://github.com/TerryHowe/ansible-modules-hashivault
 
+
+## Quick Start
+
+1) Install Ansible Modules Hashivault from above github repo:
+```pip install ansible-modules-hashivault```
+
+2) Install sshuttle (assuming Debian/Ubuntu based distribution)
+```sudo apt install sshuttle```
+
+3) Deploy resources to AWS via Terraform.  Assumes you have an AWS account to launch to.  This was built with
+temporary sandboxes via acloudguru.com.
+Under the terraform/ directory execute:
+```terraform init```
+```terraform plan```
+```terraform apply```
+
+4) connect to the EC2 instance via poor man's VPN - sshuttle with the login script located under terraform/ directory
+```./connect.sh```
+
+5) deploy ansible roles from the ansible/ directory
+```./deploy.sh```
+
+
 ### Notes:
 
 These are horrible practices here.  Not meant for production at all.  (unseal and root tokens saved to local disk)
