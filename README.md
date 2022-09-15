@@ -29,7 +29,7 @@ Under the terraform/ directory execute:\
 5) connect to the EC2 instance via poor man's VPN - sshuttle with the login script located under terraform/ directory
 ```./connect.sh```
 
-6) deploy ansible roles from the ansible/ directory\n
+6) deploy ansible roles from the ansible/ directory\
 ```./deploy.sh```
 
 
